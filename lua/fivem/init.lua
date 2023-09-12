@@ -53,6 +53,8 @@ function M.setup(opts)
 	M.opts = vim.tbl_deep_extend("force", M.opts, opts)
 	M.LoadOptions()
 
+	require("fivem.commands").init()
+
 	M.debugLog("Finished setup")
 end
 
