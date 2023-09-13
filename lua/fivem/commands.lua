@@ -54,7 +54,7 @@ function M.init()
 
 			local results = {}
 
-			for i, v in pairs(M.commands) do
+			for i in pairs(M.commands) do
 				if #line == 0 or string.find(i, line) then
 					table.insert(results, i)
 				end
