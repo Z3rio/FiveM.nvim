@@ -20,10 +20,9 @@
   end,
 
   dependencies = {
-    "rcarriga/nvim-notify", 'stevearc/dressing.nvim'
+    "rcarriga/nvim-notify", 'stevearc/dressing.nvim', 'nvim-lua/plenary.nvim'
   },
 
   lazy = false,
-  dev = true
 },
 ```
