@@ -2,11 +2,11 @@ local M = {}
 
 ---@class Opts
 ---@field debug boolean
----@field rcon nil | string
+---@field password nil | string
 ---@field server nil | string
 vim.g.fivem_opts = vim.g.fivem_opts or {
 	debug = false,
-	rcon = nil,
+	password = nil,
 	server = nil,
 }
 
@@ -60,25 +60,25 @@ end
 
 ---@return boolean
 function M.validSettings()
-	return vim.g.fivem_opts.server ~= nil and vim.g.fivem_opts.rcon ~= nil
+	return vim.g.fivem_opts.server ~= nil and vim.g.fivem_opts.password ~= nil
 end
 
 function M.initialize()
 	vim.ui.input({
-		prompt = "Server IP & Port",
-		default = "http://localhost:30120",
+		prompt = "API IP & Port",
+		default = "http://localhost:6969",
 	}, function(serverIp)
 		if serverIp ~= nil then
 			vim.ui.input({
-				prompt = "Your Rcon Key",
+				prompt = "Your Password",
 				default = "",
-			}, function(rconKey)
-				if rconKey ~= nil then
+			}, function(password)
+				if password ~= nil then
 					local f, err = io.open(M.getDataPath(), "w")
 
 					if f then
 						f:write(vim.json.encode({
-							rcon = rconKey,
+							password = password,
 							server = serverIp,
 						}))
 						f:close()

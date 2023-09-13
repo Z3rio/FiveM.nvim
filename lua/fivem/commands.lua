@@ -19,7 +19,7 @@ M.commands = {
 		local valid = init.validSettings()
 		if valid == true then
 			require("plenary.curl").request({
-				url = vim.g.fivem_opts.server .. "/resources/list?password=" .. vim.g.fivem_opts.rcon,
+				url = vim.g.fivem_opts.server .. "/resources/list?password=" .. vim.g.fivem_opts.password,
 				method = "get",
 				compressed = false,
 				callback = vim.schedule_wrap(function(data)
@@ -28,7 +28,7 @@ M.commands = {
 			})
 		else
 			require("notify")(
-				"You have either not set up the rcon/server settings correctly, or your server is not running.\n"
+				"You have either not set up the password/api settings correctly, or your server is not running.\n"
 					.. "To set up your settings, use :FiveM setup",
 				"error",
 				{
