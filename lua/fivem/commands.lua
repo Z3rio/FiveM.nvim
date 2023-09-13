@@ -1,4 +1,5 @@
 local M = {}
+local init = require("fivem.init")
 
 ---@class Command
 ---@field func function
@@ -7,11 +8,34 @@ local M = {}
 ---@type Object<string, Command>
 M.commands = {
 	setup = function()
-		require("fivem.init").initialize()
+		init.initialize()
 	end,
 
 	init = function()
-		require("fivem.init").initialize()
+		init.initialize()
+	end,
+
+	resources = function()
+		local valid = init.validSettings()
+		if valid == true then
+			require("plenary.curl").request({
+				url = vim.g.fivem_opts.server .. "/resources/list?password=" .. vim.g.fivem_opts.rcon,
+				method = "get",
+				compressed = false,
+				callback = vim.schedule_wrap(function(data)
+					print(vim.json.encode(data))
+				end),
+			})
+		else
+			require("notify")(
+				"You have either not set up the rcon/server settings correctly, or your server is not running.\n"
+					.. "To set up your settings, use :FiveM setup",
+				"error",
+				{
+					title = "FiveM.nvim",
+				}
+			)
+		end
 	end,
 }
 

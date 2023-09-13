@@ -4,7 +4,7 @@ local M = {}
 ---@field debug boolean
 ---@field rcon nil | string
 ---@field server nil | string
-M.opts = {
+vim.g.fivem_opts = vim.g.fivem_opts or {
 	debug = false,
 	rcon = nil,
 	server = nil,
@@ -12,7 +12,7 @@ M.opts = {
 
 ---@param msg string
 function M.debugLog(msg)
-	if M.opts.debug == true then
+	if vim.g.fivem_opts.debug == true then
 		print("FiveM [DEBUG] - " .. msg)
 	end
 end
@@ -32,7 +32,7 @@ function M.loadData()
 	local content = f:read("*a")
 	f:close()
 
-	M.opts = vim.tbl_deep_extend("force", M.opts, vim.json.decode(content))
+	vim.g.fivem_opts = vim.tbl_deep_extend("force", vim.g.fivem_opts, vim.json.decode(content))
 
 	return true
 end
@@ -50,12 +50,17 @@ end
 
 ---@param opts Opts
 function M.setup(opts)
-	M.opts = vim.tbl_deep_extend("force", M.opts, opts)
+	vim.g.fivem_opts = vim.tbl_deep_extend("force", vim.g.fivem_opts, opts)
 	M.LoadOptions()
 
 	require("fivem.commands").init()
 
 	M.debugLog("Finished setup")
+end
+
+---@return boolean
+function M.validSettings()
+	return vim.g.fivem_opts.server ~= nil and vim.g.fivem_opts.rcon ~= nil
 end
 
 function M.initialize()
@@ -82,7 +87,7 @@ function M.initialize()
 					end
 
 					require("notify")(
-						"You have now finalized the setup!\n" .. "You can re run this at any time with :FiveMSetup",
+						"You have now finalized the setup!\n" .. "You can re run this at any time with :FiveM setup",
 						"success",
 						{
 							title = "FiveM.nvim",
@@ -90,7 +95,7 @@ function M.initialize()
 					)
 				else
 					require("notify")(
-						"You cancelled the setup of FiveM.nvim\n" .. "To re run this setup, use :FiveMSetup",
+						"You cancelled the setup of FiveM.nvim\n" .. "To re run this setup, use :FiveM setup",
 						"error",
 						{
 							title = "FiveM.nvim",
@@ -100,7 +105,7 @@ function M.initialize()
 			end)
 		else
 			require("notify")(
-				"You cancelled the setup of FiveM.nvim\n" .. "To re run this setup, use :FiveMSetup",
+				"You cancelled the setup of FiveM.nvim\n" .. "To re run this setup, use :FiveM setup",
 				"error",
 				{
 					title = "FiveM.nvim",
