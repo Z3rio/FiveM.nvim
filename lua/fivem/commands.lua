@@ -1,10 +1,6 @@
 local M = {}
 local init = require("fivem.init")
 
----@class Command
----@field func function
----@field opts? Object
-
 M.commands = {
 	setup = function()
 		init.initialize()
@@ -15,28 +11,22 @@ M.commands = {
 	end,
 
 	healthCheck = function()
-		init.healthCheck(function(resp)
-			if resp == true then
-				require("notify")("Your configuration is valid", "success", {
-					title = "FiveM.nvim",
-				})
-			else
-				require("notify")("Your configuration is invalid, or the server is not running", "error", {
-					title = "FiveM.nvim",
-				})
-			end
-		end)
+		init.healthCheck(false)
 	end,
 }
 
 M.commands = vim.tbl_deep_extend("force", M.commands, require("fivem.cmds").commands)
 
 function M.init()
-	M.commands.healthCheck()
+	init.healthCheck(false)
 
 	vim.api.nvim_create_user_command("FiveM", function(opts)
 		if M.commands[opts.args] then
-			M.commands[opts.args]()
+			init.healthCheck(true, function(resp)
+				if resp == true then
+					M.commands[opts.args]()
+				end
+			end)
 		end
 	end, {
 		bar = true,
