@@ -19,7 +19,7 @@ end
 
 ---@return string
 function M.getDataPath()
-	return io.popen("cd"):read() .. "/data.json"
+	return vim.fn.stdpath("data") .. "/FiveM.nvim.json"
 end
 
 ---@return boolean

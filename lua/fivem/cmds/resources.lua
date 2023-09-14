@@ -61,61 +61,63 @@ M.commands = {
 								return "[" .. resp.list[item].status .. "] - " .. item
 							end,
 						}, function(chosenResource)
-							Menu({
-								position = "50%",
-								size = {
-									width = 35,
-									height = 10,
-								},
-								border = {
-									style = "single",
-									text = {
-										top = chosenResource,
-										top_align = "center",
+							if chosenResource then
+								Menu({
+									position = "50%",
+									size = {
+										width = 35,
+										height = 10,
 									},
-								},
-								win_options = {
-									winhighlight = "Normal:Normal,FloatBorder:Normal",
-								},
-							}, {
-								lines = {
-									Menu.separator("Current status: " .. resp.list[chosenResource].status, {
-										char = "",
-										text_align = "right",
-									}),
-									Menu.separator("Version: " .. resp.list[chosenResource].version, {
-										char = "",
-										text_align = "right",
-									}),
-									Menu.separator("", {
-										char = "-",
-										text_align = "right",
-									}),
-									Menu.item("Restart"),
-									Menu.item("Stop"),
-									Menu.item("Start"),
-								},
-								max_width = 20,
-								keymap = {
-									focus_next = { "j", "<Down>", "<Tab>" },
-									focus_prev = { "k", "<Up>", "<S-Tab>" },
-									close = { "<Esc>", "<C-c>" },
-									submit = { "<CR>", "<Space>" },
-								},
-								on_submit = function(item)
-									require("plenary.curl").request({
-										url = vim.g.fivem_opts.server
-											.. "/resources/"
-											.. chosenResource
-											.. "/"
-											.. string.lower(item.text)
-											.. "?password="
-											.. vim.g.fivem_opts.password,
-										method = "post",
-										compressed = false,
-									})
-								end,
-							}):mount()
+									border = {
+										style = "single",
+										text = {
+											top = chosenResource,
+											top_align = "center",
+										},
+									},
+									win_options = {
+										winhighlight = "Normal:Normal,FloatBorder:Normal",
+									},
+								}, {
+									lines = {
+										Menu.separator("Current status: " .. resp.list[chosenResource].status, {
+											char = "",
+											text_align = "right",
+										}),
+										Menu.separator("Version: " .. resp.list[chosenResource].version, {
+											char = "",
+											text_align = "right",
+										}),
+										Menu.separator("", {
+											char = "-",
+											text_align = "right",
+										}),
+										Menu.item("Restart"),
+										Menu.item("Stop"),
+										Menu.item("Start"),
+									},
+									max_width = 20,
+									keymap = {
+										focus_next = { "j", "<Down>", "<Tab>" },
+										focus_prev = { "k", "<Up>", "<S-Tab>" },
+										close = { "<Esc>", "<C-c>" },
+										submit = { "<CR>", "<Space>" },
+									},
+									on_submit = function(item)
+										require("plenary.curl").request({
+											url = vim.g.fivem_opts.server
+												.. "/resources/"
+												.. chosenResource
+												.. "/"
+												.. string.lower(item.text)
+												.. "?password="
+												.. vim.g.fivem_opts.password,
+											method = "post",
+											compressed = false,
+										})
+									end,
+								}):mount()
+							end
 						end)
 					end
 				end),
