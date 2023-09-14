@@ -19,7 +19,7 @@ end
 
 ---@return string
 function M.getDataPath()
-	return vim.fn.expand("%:h:h:h") .. "/data.json"
+	return io.popen("cd"):read() .. "/data.json"
 end
 
 ---@return boolean
