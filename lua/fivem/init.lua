@@ -22,6 +22,22 @@ function M.getDataPath()
 	return vim.fn.stdpath("data") .. "/FiveM.nvim.json"
 end
 
+---@param cb function
+function M.healthCheck(cb)
+	require("plenary.curl").request({
+		url = vim.g.fivem_opts.server .. "/misc/healthCheck?password=" .. vim.g.fivem_opts.password,
+		method = "get",
+		compressed = false,
+		callback = vim.schedule_wrap(function(data)
+			local body = vim.json.decode(data.body)
+			cb(body.err == nil)
+		end),
+		on_error = vim.schedule_wrap(function()
+			cb(false)
+		end),
+	})
+end
+
 ---@return boolean
 function M.loadData()
 	local f = io.open(M.getDataPath(), "rb")
