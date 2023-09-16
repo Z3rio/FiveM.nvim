@@ -12,7 +12,7 @@ local statePriority = {
 M.commands = {
 	restart = {
 		cb = function(args)
-			require("fivem.curl").request({
+			local resp = require("fivem.curl").request({
 				url = vim.g.fivem_opts.server
 					.. "/resources/"
 					.. args[1]
@@ -21,6 +21,18 @@ M.commands = {
 				method = "post",
 				compressed = false,
 			})
+
+			local body = vim.json.decode(resp.body)
+
+			if body.err then
+				require("notify")("Could not restart " .. args[1] .. ", the resource is not started.", "error", {
+					title = "FiveM.nvim",
+				})
+			else
+				require("notify")("Successfully restarted " .. args[1] .. "!", "success", {
+					title = "FiveM.nvim",
+				})
+			end
 		end,
 		complete = function(splits)
 			local valid = init.healthCheck(true)
@@ -44,7 +56,7 @@ M.commands = {
 
 	start = {
 		cb = function(args)
-			require("fivem.curl").request({
+			local resp = require("fivem.curl").request({
 				url = vim.g.fivem_opts.server
 					.. "/resources/"
 					.. args[1]
@@ -53,6 +65,18 @@ M.commands = {
 				method = "post",
 				compressed = false,
 			})
+
+			local body = vim.json.decode(resp.body)
+
+			if body.err then
+				require("notify")("Could not restart " .. args[1] .. ", the resource is not stopped.", "error", {
+					title = "FiveM.nvim",
+				})
+			else
+				require("notify")("Successfully started " .. args[1] .. "!", "success", {
+					title = "FiveM.nvim",
+				})
+			end
 		end,
 		complete = function(splits)
 			local valid = init.healthCheck(true)
@@ -76,7 +100,7 @@ M.commands = {
 
 	ensure = {
 		cb = function(args)
-			require("fivem.curl").request({
+			local resp = require("fivem.curl").request({
 				url = vim.g.fivem_opts.server
 					.. "/resources/"
 					.. args[1]
@@ -85,6 +109,14 @@ M.commands = {
 				method = "post",
 				compressed = false,
 			})
+
+			local body = vim.json.decode(resp.body)
+
+			if body.err then
+				require("notify")("Successfully ensured " .. args[1] .. "!", "success", {
+					title = "FiveM.nvim",
+				})
+			end
 		end,
 		complete = function(splits)
 			local valid = init.healthCheck(true)
