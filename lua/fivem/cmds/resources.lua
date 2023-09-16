@@ -69,7 +69,7 @@ M.commands = {
 			local body = vim.json.decode(resp.body)
 
 			if body.err then
-				require("notify")("Could not restart " .. args[1] .. ", the resource is not stopped.", "error", {
+				require("notify")("Could not start " .. args[1] .. ", the resource is not stopped.", "error", {
 					title = "FiveM.nvim",
 				})
 			else
@@ -85,6 +85,50 @@ M.commands = {
 				local resp = require("fivem.curl").request({
 					url = vim.g.fivem_opts.server
 						.. "/resources/names?states=stopped&password="
+						.. vim.g.fivem_opts.password,
+					method = "get",
+					compressed = false,
+				})
+
+				local body = vim.json.decode(resp.body)
+				return body.list
+			else
+				return {}
+			end
+		end,
+	},
+
+	stop = {
+		cb = function(args)
+			local resp = require("fivem.curl").request({
+				url = vim.g.fivem_opts.server
+					.. "/resources/"
+					.. args[1]
+					.. "/stop?password="
+					.. vim.g.fivem_opts.password,
+				method = "post",
+				compressed = false,
+			})
+
+			local body = vim.json.decode(resp.body)
+
+			if body.err then
+				require("notify")("Could not stop " .. args[2] .. ", the resource is not started.", "error", {
+					title = "FiveM.nvim",
+				})
+			else
+				require("notify")("Successfully stopped " .. args[1] .. "!", "success", {
+					title = "FiveM.nvim",
+				})
+			end
+		end,
+		complete = function(splits)
+			local valid = init.healthCheck(true)
+
+			if #splits < 1 and valid == true then
+				local resp = require("fivem.curl").request({
+					url = vim.g.fivem_opts.server
+						.. "/resources/names?states=started&password="
 						.. vim.g.fivem_opts.password,
 					method = "get",
 					compressed = false,
