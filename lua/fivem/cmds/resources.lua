@@ -12,7 +12,15 @@ local statePriority = {
 M.commands = {
 	restart = {
 		cb = function(args)
-			print("restart", vim.json.encode(args))
+			require("fivem.curl").request({
+				url = vim.g.fivem_opts.server
+					.. "/resources/"
+					.. args[1]
+					.. "/restart?password="
+					.. vim.g.fivem_opts.password,
+				method = "post",
+				compressed = false,
+			})
 		end,
 		complete = function(splits)
 			local valid = init.healthCheck(true)
@@ -22,6 +30,68 @@ M.commands = {
 					url = vim.g.fivem_opts.server
 						.. "/resources/names?states=started&password="
 						.. vim.g.fivem_opts.password,
+					method = "get",
+					compressed = false,
+				})
+
+				local body = vim.json.decode(resp.body)
+				return body.list
+			else
+				return {}
+			end
+		end,
+	},
+
+	start = {
+		cb = function(args)
+			require("fivem.curl").request({
+				url = vim.g.fivem_opts.server
+					.. "/resources/"
+					.. args[1]
+					.. "/start?password="
+					.. vim.g.fivem_opts.password,
+				method = "post",
+				compressed = false,
+			})
+		end,
+		complete = function(splits)
+			local valid = init.healthCheck(true)
+
+			if #splits < 1 and valid == true then
+				local resp = require("fivem.curl").request({
+					url = vim.g.fivem_opts.server
+						.. "/resources/names?states=stopped&password="
+						.. vim.g.fivem_opts.password,
+					method = "get",
+					compressed = false,
+				})
+
+				local body = vim.json.decode(resp.body)
+				return body.list
+			else
+				return {}
+			end
+		end,
+	},
+
+	ensure = {
+		cb = function(args)
+			require("fivem.curl").request({
+				url = vim.g.fivem_opts.server
+					.. "/resources/"
+					.. args[1]
+					.. "/ensure?password="
+					.. vim.g.fivem_opts.password,
+				method = "post",
+				compressed = false,
+			})
+		end,
+		complete = function(splits)
+			local valid = init.healthCheck(true)
+
+			if #splits < 1 and valid == true then
+				local resp = require("fivem.curl").request({
+					url = vim.g.fivem_opts.server .. "/resources/names?password=" .. vim.g.fivem_opts.password,
 					method = "get",
 					compressed = false,
 				})
