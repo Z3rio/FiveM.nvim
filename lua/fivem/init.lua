@@ -23,39 +23,38 @@ function M.getDataPath()
 end
 
 ---@param silent? boolean
----@param cb? function
-function M.healthCheck(silent, cb)
-	require("plenary.curl").request({
+function M.healthCheck(silent)
+	local retVal = require("fivem.curl").request({
 		url = vim.g.fivem_opts.server .. "/misc/healthCheck?password=" .. vim.g.fivem_opts.password,
 		method = "get",
 		compressed = false,
-		callback = vim.schedule_wrap(function(data)
-			local body = vim.json.decode(data.body)
+	})
 
-			if body.err ~= nil then
-				require("notify")("Your configuration is invalid, or the server is not running", "error", {
-					title = "FiveM.nvim",
-				})
-			elseif silent ~= true then
-				require("notify")("Your configuration is valid", "success", {
-					title = "FiveM.nvim",
-				})
-			end
-
-			if cb then
-				cb(body.err == nil)
-			end
-		end),
-		on_error = vim.schedule_wrap(function()
+	if retVal.exit ~= 0 then
+		if silent ~= true then
 			require("notify")("Your configuration is invalid, or the server is not running", "error", {
 				title = "FiveM.nvim",
 			})
+		end
 
-			if cb then
-				cb(false)
+		return false
+	else
+		local body = vim.json.decode(retVal.body)
+
+		if silent ~= true then
+			if body.err == nil then
+				require("notify")("Your configuration is valid", "success", {
+					title = "FiveM.nvim",
+				})
+			else
+				require("notify")("Your configuration is invalid, or the server is not running", "error", {
+					title = "FiveM.nvim",
+				})
 			end
-		end),
-	})
+		end
+
+		return body.err == nil
+	end
 end
 
 ---@return boolean
