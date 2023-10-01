@@ -24,36 +24,40 @@ end
 
 ---@param silent? boolean
 function M.healthCheck(silent)
-	local retVal = require("fivem.curl").request({
-		url = vim.g.fivem_opts.server .. "/misc/healthCheck?password=" .. vim.g.fivem_opts.password,
-		method = "get",
-		compressed = false,
-	})
+	if vim.g.fivem_opts ~= nil and vim.g.fivem_opts.server ~= nil and vim.g.fivem_opts.password ~= nil then
+		local retVal = require("fivem.curl").request({
+			url = vim.g.fivem_opts.server .. "/misc/healthCheck?password=" .. vim.g.fivem_opts.password,
+			method = "get",
+			compressed = false,
+		})
 
-	if retVal.exit ~= 0 then
-		if silent ~= true then
-			require("notify")("Your configuration is invalid, or the server is not running", "error", {
-				title = "FiveM.nvim",
-			})
-		end
-
-		return false
-	else
-		local body = vim.json.decode(retVal.body)
-
-		if silent ~= true then
-			if body.err == nil then
-				require("notify")("Your configuration is valid", "success", {
-					title = "FiveM.nvim",
-				})
-			else
+		if retVal.exit ~= 0 then
+			if silent ~= true then
 				require("notify")("Your configuration is invalid, or the server is not running", "error", {
 					title = "FiveM.nvim",
 				})
 			end
-		end
 
-		return body.err == nil
+			return false
+		else
+			local body = vim.json.decode(retVal.body)
+
+			if silent ~= true then
+				if body.err == nil then
+					require("notify")("Your configuration is valid", "success", {
+						title = "FiveM.nvim",
+					})
+				else
+					require("notify")("Your configuration is invalid, or the server is not running", "error", {
+						title = "FiveM.nvim",
+					})
+				end
+			end
+
+			return body.err == nil
+		end
+	else
+		return false
 	end
 end
 
